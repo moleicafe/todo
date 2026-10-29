@@ -1,5 +1,5 @@
 /* Service worker: keeps the app usable offline and shows notifications. */
-const VERSION = 'ep-todo-v2';
+const VERSION = 'ep-todo-v3';
 const SHELL = ['./', 'index.html', 'app.js', 'learn.js', 'manifest.json', 'icon-192.png', 'icon-512.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'];
 
