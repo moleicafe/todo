@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EP To-Do</title>
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#f4f5f2;--card:#ffffff;--ink:#1c1f1d;--muted:#6b716d;--line:#e3e5e0;
+  --accent:#0f766e;--accent-ink:#ffffff;
+  --high:#c2410c;--high-bg:#fff1e8;--med:#a16207;--med-bg:#fdf6e3;--low:#4b6b8a;--low-bg:#eef3f8;
+  --danger:#b91c1c;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121413;--card:#1c1f1d;--ink:#eceeea;--muted:#9aa19c;--line:#2c302d;
+    --accent:#2dd4bf;--accent-ink:#06201d;
+    --high:#fb923c;--high-bg:#3a2214;--med:#facc15;--med-bg:#332b10;--low:#93b4d4;--low-bg:#1c2834;
+    --danger:#f87171;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 80px}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px}
+header h1{font-size:20px;margin:0;letter-spacing:-.01em}
+.status{font-size:12px;color:var(--muted);margin-left:8px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px}
+.icon-btn{background:transparent;color:var(--muted);font-size:22px;padding:4px 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.add-row{display:flex;gap:8px}
+.add-row input{flex:1}
+.primary{background:var(--accent);color:var(--accent-ink);padding:10px 16px;font-weight:600}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 12px}
+.danger{background:transparent;border:1px solid var(--danger);color:var(--danger);padding:8px 12px}
+.prio{display:flex;gap:6px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.prio button{flex:1;min-width:70px;padding:8px 0;font-weight:600;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.prio button[data-p="3"].on{background:var(--high-bg);color:var(--high);border-color:var(--high)}
+.prio button[data-p="2"].on{background:var(--med-bg);color:var(--med);border-color:var(--med)}
+.prio button[data-p="1"].on{background:var(--low-bg);color:var(--low);border-color:var(--low)}
+.hint{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+.hint b{color:var(--accent);font-weight:600}
+.due-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.due-row input{flex:1;padding:8px 10px;font-size:14px}
+.due-row button{padding:8px 10px;font-size:13px}
+.tabs{display:flex;gap:6px;margin:16px 0 8px}
+.tabs button{flex:1;padding:9px;background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:600}
+.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.count{font-weight:400;opacity:.8}
+ul{list-style:none;margin:0;padding:0}
+li.task{display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+li.task.done .title{text-decoration:line-through;color:var(--muted)}
+.check{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);background:transparent;margin-top:1px;padding:0}
+li.done .check{background:var(--accent);border-color:var(--accent)}
+li.done .check::after{content:"✓";color:var(--accent-ink);font-size:14px;line-height:20px}
+.body{flex:1;min-width:0}
+.title{word-wrap:break-word}
+.meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;flex:none;align-self:center}
+.tag.p3{background:var(--high-bg);color:var(--high)}
+.tag.p2{background:var(--med-bg);color:var(--med)}
+.tag.p1{background:var(--low-bg);color:var(--low)}
+.soon{color:var(--high);font-weight:600}
+.section-h{font-size:13px;color:var(--muted);margin:16px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.section-h button{background:none;color:var(--muted);font-size:13px;padding:0}
+.empty{color:var(--muted);text-align:center;padding:24px 8px;font-size:14px}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:16px;width:min(92vw,440px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{font-size:17px;margin:0 0 12px}
+dialog label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.row .spacer{flex:1}
+#auth{max-width:380px;margin:48px auto}
+#auth h1{font-size:22px;margin:0 0 4px}
+#auth p{color:var(--muted);font-size:14px;margin:0 0 16px}
+#auth input{margin-bottom:10px}
+#auth .row{justify-content:stretch}
+#auth .row button{flex:1}
+.msg{font-size:14px;margin-top:12px;color:var(--muted)}
+.msg.err{color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;display:flex;gap:12px;align-items:center;max-width:92vw;z-index:10}
+.toast button{background:none;color:var(--accent);font-weight:700;padding:0}
+.hidden{display:none!important}
+.settings p{font-size:14px;margin:6px 0;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div id="auth" class="wrap hidden">
+  <h1>EP To-Do</h1>
+  <p>Sign in to sync your tasks between phone and PC.</p>
+  <input id="email" type="email" placeholder="Email" autocomplete="username">
+  <input id="password" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password">
+  <div class="row">
+    <button id="signin" class="primary">Sign in</button>
+    <button id="signup" class="ghost">Create account</button>
+  </div>
+  <div id="authMsg" class="msg"></div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <header>
+    <div><h1 style="display:inline">To-Do</h1><span id="sync" class="status"></span></div>
+    <button class="icon-btn" id="openSettings" aria-label="Settings">⚙</button>
+  </header>
+
+  <!-- Quick add (tasks) -->
+  <div class="card" id="addTask">
+    <div class="add-row">
+      <input id="newTitle" placeholder="Add a task…" autocomplete="off" enterkeyhint="done">
+      <button class="primary" id="addBtn">Add</button>
+    </div>
+    <div class="prio" id="newPrio">
+      <button data-p="3">High</button><button data-p="2" class="on">Medium</button><button data-p="1">Low</button>
+    </div>
+    <div class="due-row">
+      <input id="newDue" type="datetime-local" aria-label="Due time (optional)">
+      <button class="ghost" id="clearDue">No time</button>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <!-- Quick add (daily) -->
+  <div class="card hidden" id="addDaily">
+    <div class="add-row">
+      <input id="dTitle" placeholder="Daily task, e.g. lock #04-04" autocomplete="off" enterkeyhint="done">
+      <button class="primary" id="dAdd">Add</button>
+    </div>
+    <div class="due-row">
+      <input id="dTime" type="time" aria-label="Reminder time (optional)">
+      <span style="font-size:13px;color:var(--muted)">Reminder (optional)</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabTasks" class="on">Tasks <span class="count" id="cTasks"></span></button>
+    <button id="tabDaily">Daily <span class="count" id="cDaily"></span></button>
+  </div>
+
+  <section id="viewTasks">
+    <ul id="list"></ul>
+    <div class="section-h hidden" id="doneHead"><span>Done today</span><button id="toggleDone">Show</button></div>
+    <ul id="doneList" class="hidden"></ul>
+  </section>
+
+  <section id="viewDaily" class="hidden">
+    <ul id="dailyList"></ul>
+    <p class="hint">Daily tasks untick themselves every morning.</p>
+  </section>
+</div>
+
+<dialog id="editDlg">
+  <h2 id="editHead">Edit task</h2>
+  <label for="eTitle">Task</label><input id="eTitle">
+  <div id="ePrioWrap">
+    <label>Importance</label>
+    <div class="prio" id="ePrio" style="margin-top:0">
+      <button data-p="3">High</button><button data-p="2">Medium</button><button data-p="1">Low</button>
+    </div>
+  </div>
+  <label for="eDue" id="eDueLabel">Due (optional)</label><input id="eDue" type="datetime-local">
+  <label for="eTime" id="eTimeLabel" class="hidden">Reminder time (optional)</label><input id="eTime" type="time" class="hidden">
+  <div class="row">
+    <button class="danger" id="eDelete">Delete</button><span class="spacer"></span>
+    <button class="ghost" id="eCancel">Cancel</button><button class="primary" id="eSave">Save</button>
+  </div>
+</dialog>
+
+<dialog id="setDlg" class="settings">
+  <h2>Settings</h2>
+  <p id="sUser"></p>
+  <p id="sLearn"></p>
+  <p id="sNotif"></p>
+  <p id="sTg"></p>
+  <div class="row" style="justify-content:flex-start;margin-top:8px">
+    <a id="sTgLink" class="primary hidden" style="text-decoration:none;border-radius:10px" target="_blank" rel="noopener">Open Telegram to link</a>
+    <button class="ghost" id="sTgConnect">Connect Telegram</button>
+    <button class="ghost hidden" id="sTgDisconnect">Disconnect Telegram</button>
+  </div>
+  <div class="row">
+    <button class="ghost" id="sEnableNotif">Turn on reminders</button>
+    <button class="ghost" id="sSignout">Sign out</button>
+    <button class="primary" id="sClose">Close</button>
+  </div>
+</dialog>
+
+<div id="toast" class="toast hidden"><span id="toastMsg"></span><button id="toastUndo">Undo</button></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="learn.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
