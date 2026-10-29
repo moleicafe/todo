@@ -21,7 +21,7 @@ The code is public, but your tasks are not: they live in your Supabase database 
 4. Settings (⚙) > **Connect Telegram** > **Open Telegram to link** > press **Start**. Reminders now come through Telegram.
 
 ## How it works
-- Type a task, pick High / Medium / Low, press Enter. A time in the text ("at 3pm", "tmr 10.30am", "by 15:30") fills the due time.
+- Type a task, pick High / Medium / Low, then tap **Add** (on PC, Enter also adds). New line: Enter on phone, Shift+Enter on PC. A time in the text ("at 3pm", "tmr 10.30am", "by 15:30") fills the due time.
 - After 5 tasks, it pre-selects importance from how you rated tasks starting with the same action words ("get payment", "list … NPIs"). Change it whenever it's wrong; changes teach it faster.
 - Tasks due within an hour or overdue move up the list.
 - Daily tab: tasks that untick every morning, each with its own optional reminder time.

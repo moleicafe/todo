@@ -194,7 +194,14 @@ function updateSuggestion() {
 
 let suggestTimer = null;
 $('newTitle').addEventListener('input', () => { clearTimeout(suggestTimer); suggestTimer = setTimeout(updateSuggestion, 120); });
-$('newTitle').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addTask(); } });
+// PC: Enter adds, Shift+Enter makes a new line. Phone/touch: Enter makes a new line, tap Add to save.
+const touchOnly = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+$('newTitle').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !touchOnly && !e.isComposing) { e.preventDefault(); addTask(); }
+});
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; }
+$('newTitle').addEventListener('input', e => autoGrow(e.target));
+$('eTitle').addEventListener('input', e => autoGrow(e.target));
 $('newPrio').addEventListener('click', e => {
   const p = Number(e.target.dataset.p); if (!p) return;
   newPrio = p; prioTouched = true; setPrioButtons($('newPrio'), p);
@@ -219,6 +226,7 @@ function addTask() {
   queue({ op: 'upsert', table: 'tasks', row });
   retrain();
   $('newTitle').value = ''; $('newDue').value = '';
+  autoGrow($('newTitle'));
   prioTouched = false; dueTouched = false; lastPred = null;
   updateSuggestion(); render();
   $('newTitle').focus();
@@ -288,7 +296,7 @@ function openEdit(kind, id) {
   ['eTime', 'eTimeLabel'].forEach(x => $(x).classList.toggle('hidden', isTask));
   if (isTask) { editPrio = r.priority; setPrioButtons($('ePrio'), editPrio); $('eDue').value = toLocalInput(r.due_at); }
   else $('eTime').value = r.remind_time || '';
-  $('editDlg').showModal();
+  $('editDlg').showModal(); autoGrow($('eTitle'));
 }
 $('eCancel').onclick = () => $('editDlg').close();
 $('eSave').onclick = () => {
@@ -520,6 +528,9 @@ $('signup').onclick = async () => {
   authMsg('Creating account…');
   const { data, error } = await sb.auth.signUp(c);
   if (error) return authMsg(error.message, true);
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    return authMsg('This email already has an account. Tap Sign in instead.', true);
+  }
   if (!data.session) authMsg('Account created. Open the confirmation email and tap the link. If the page after that fails to load, that is fine: your email is confirmed. Then come back and sign in.');
 };
 $('password').addEventListener('keydown', e => { if (e.key === 'Enter') $('signin').click(); });
